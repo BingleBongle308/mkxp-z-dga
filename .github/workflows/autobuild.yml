@@ -193,7 +193,7 @@ jobs:
       - name: Configure
         shell: msys2 {0}
         run: |
-          meson setup --prefix "$(pwd)/build/artifact" ${{ env.build_options }} -Dexe_name=${{ steps.name.outputs.name }} build
+          meson setup --prefix "$(pwd)/build/artifact" ${{ env.build_options }} -D exe_name=${{ steps.name.outputs.name }} build
 
       - name: Build
         id: build
