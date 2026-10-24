@@ -26,11 +26,7 @@ jobs:
       - name: Set matrix dynamically
         id: set-matrix
         run: |
-          if [[ "${{ github.ref_type }}" != "tag" || "${{ github.ref_name }}" == "test-"* ]]; then
-            names='["game"]'
-          else
-            names='["reborn", "rejuvenation", "desolation"]'
-          fi
+          names='["game"]'
 
           windows=$(jq --compact-output --null-input --argjson names "$names" \
             '{ include: [ $names[] | { game: ., cache: true, arch_mkxpz: "x86_64", clang: false } ] }')
