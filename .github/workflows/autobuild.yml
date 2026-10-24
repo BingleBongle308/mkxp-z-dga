@@ -352,7 +352,7 @@ jobs:
           else
             compiler=gcc
           fi
-          meson setup --prefix "$(pwd)/build/artifact" --cross-file windows/meson-$compiler-${{ matrix.arch_mkxpz }}.txt ${{ env.build_options }} -Dexe_name=${{ steps.name.outputs.name }} build
+          meson setup --prefix "$(pwd)/build/artifact" --cross-file windows/meson-$compiler-${{ matrix.arch_mkxpz }}.txt ${{ env.build_options }} -Dexe_name=Game build
 
       - name: Build
         id: build

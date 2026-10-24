@@ -9,9 +9,6 @@ host_system = host_machine.system()
 host_endian = host_machine.endian()
 
 exe_name = get_option('exe_name')
-if exe_name == ''
-    exe_name = meson.project_name() + '.' + host_machine.cpu()
-endif
 
 is_bsd = host_system in ['dragonfly', 'freebsd', 'netbsd', 'openbsd']
 is_unix = is_bsd or host_system in ['linux']
