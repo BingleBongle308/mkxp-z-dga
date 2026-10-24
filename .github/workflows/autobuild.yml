@@ -414,6 +414,7 @@ jobs:
           path: build/artifact
 
   build-linux-gnu:
+    if: false
     name: ${{ matrix.distro }} ${{ matrix.suite }} ${{ matrix.arch_mkxpz }} (${{ matrix.game }})
     runs-on: ubuntu-26.04
     needs: set-matrix
@@ -1030,6 +1031,7 @@ jobs:
           path: build/artifact
 
   build-macos:
+    if: false
     name: macOS ${{ matrix.arch_mkxpz }} (${{ matrix.game }})
     runs-on: macos-latest
     needs: set-matrix
@@ -1147,6 +1149,7 @@ jobs:
           path: build/artifact-bundle
 
   build-macos-universal:
+    if: false
     name: macOS universal (${{ matrix.game }})
     runs-on: macos-latest
     needs:
@@ -1240,8 +1243,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build-windows-cross
-      - build-linux-gnu
-      - build-macos-universal
     if: github.ref_type == 'tag'
     steps:
       - uses: actions/download-artifact@v8
@@ -1249,28 +1250,11 @@ jobs:
           pattern: build-windows-cross-*
           path: windows
 
-      - uses: actions/download-artifact@v8
-        with:
-          pattern: build-linux-gnu-*
-          path: linux
-
-      - uses: actions/download-artifact@v8
-        with:
-          pattern: build-macos-*
-          path: macos
-
       - name: Move files
-        if: contains(github.ref_name, 'test-')
         run: |
           mv windows build-windows-cross-game
           mkdir windows
           mv build-windows-cross-game windows/
-          mv linux build-linux-gnu-game
-          mkdir linux
-          mv build-linux-gnu-game linux/
-          mv macos build-macos-universal-game
-          mkdir macos
-          mv build-macos-universal-game macos/
 
       - name: Prepare windows builds
         working-directory: windows
@@ -1283,29 +1267,6 @@ jobs:
             cd ..
           done
 
-      - name: Prepare linux builds
-        working-directory: linux
-        run: |
-          for dir in */; do
-            cd "$dir"
-            name="${dir%/}"
-            game="${name#build-linux-gnu-}"
-            bin=$(echo $game | sed 's/^\(.\)/\U\1/')
-            zip -r "../../${game}.linux.zip" ${bin} stdlib gems discord_game_sdk.so LICENSE.txt
-            cd ..
-          done
-
-      - name: Prepare macos builds
-        working-directory: macos
-        run: |
-          for dir in */; do
-            cd "$dir"
-            name="${dir%/}"
-            game="${name#build-macos-universal-}"
-            mv "${game}.app.zip" "../../${game}.macos.zip"
-            cd ..
-          done
-
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
@@ -1313,5 +1274,3 @@ jobs:
           fail_on_unmatched_files: true
           files: |
             *.windows.zip
-            *.linux.zip
-            *.macos.zip

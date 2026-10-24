@@ -7,7 +7,11 @@ gplv3_features = []
 
 host_system = host_machine.system()
 host_endian = host_machine.endian()
-exe_name = meson.project_name() + '.' + host_machine.cpu()
+
+exe_name = get_option('exe_name')
+if exe_name == ''
+    exe_name = meson.project_name() + '.' + host_machine.cpu()
+endif
 
 is_bsd = host_system in ['dragonfly', 'freebsd', 'netbsd', 'openbsd']
 is_unix = is_bsd or host_system in ['linux']
@@ -29,6 +33,12 @@ global_objcpp_args = []
 global_link_args = []
 c_std = 'gnu11,c11'
 cpp_std = 'gnu++14,c++14'
+
+if get_option('b_lto') and host_machine.system() in ['windows', 'cygwin']
+    add_global_arguments(meson.get_compiler('c').first_supported_argument('-ffat-lto-objects'), language: 'c')
+    add_global_arguments(meson.get_compiler('cpp').first_supported_argument('-ffat-lto-objects'), language: 'cpp')
+    global_link_args += meson.get_compiler('cpp').first_supported_argument('-fno-use-linker-plugin')
+endif
 
 common = subproject('common', default_options: {'c_std': c_std, 'cpp_std': cpp_std})
 cmake = import('cmake')
